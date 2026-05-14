@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Scheda — Raffaele Pannullo</title>
+<meta name="theme-color" content="#0c0c0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Workout RP">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0c0c0c;--card:#161616;--card2:#1e1e1e;--border:#272727;
+  --accent:#ff9500;--red:#ff2d55;--text:#f2f2f2;--sub:#888;
+  --petto:#ff4500;--dorso:#00c8ff;--trapezio:#00b090;
+  --gambe:#00e676;--femorali:#ffd000;--bicipiti:#ff6b6b;
+  --tricipiti:#c264ff;--spalle:#ff9500;--addominali:#ff4081;--cardio:#555;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
+
+.hd{padding:24px 16px 16px;border-bottom:1px solid var(--border);}
+.hd-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,9vw,68px);line-height:.92;letter-spacing:1px;}
+.hd-name span{color:var(--accent);}
+.hd-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;}
+.pill{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--sub);}
+.pill.goal{background:var(--accent);color:#000;border-color:var(--accent);}
+button.pill{background:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .2s,color .2s,background .2s;}
+button.pill.active{border-color:var(--accent);color:var(--accent);background:rgba(255,149,0,.1);}
+
+.info-box{margin:14px 16px;background:var(--card);border-left:3px solid var(--accent);padding:10px 14px;}
+.info-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:4px;}
+.info-body{font-size:12px;color:#aaa;line-height:1.65;}
+
+.week-bar{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;background:var(--bg);}
+.wk-btn{flex:1;padding:11px 4px;background:none;border:none;border-bottom:2px solid transparent;color:var(--sub);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s;}
+.wk-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.wk-btn.test{color:#ffd000;}
+.wk-btn.test.active{color:#ffd000;border-bottom-color:#ffd000;}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:36px;z-index:19;}
+.tab{flex:1;padding:13px 8px;background:none;border:none;border-bottom:2px solid transparent;color:var(--sub);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+.session{display:none;padding-bottom:80px;}
+.session.active{display:block;}
+body.tmr-active .session.active{padding-bottom:124px;}
+
+.warmup{margin:14px 16px;background:var(--card);border:1px solid var(--border);padding:12px 14px;}
+.warmup-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gambe);margin-bottom:6px;}
+.warmup-body{font-size:12px;color:#888;line-height:1.7;}
+
+.grp{display:flex;align-items:center;gap:10px;padding:20px 16px 6px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2.5px;}
+.grp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.js-badge{font-size:9px;font-weight:800;letter-spacing:1px;padding:2px 6px;border:1px solid #ffd000;color:#ffd000;margin-left:2px;vertical-align:middle;}
+
+.ex{background:var(--card);border-bottom:1px solid var(--border);}
+.ex.js-pair{border-left:2px solid #ffd000;}
+.ex-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.ex-idx{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--sub);min-width:22px;padding-top:1px;}
+.ex-main{flex:1;min-width:0;}
+.ex-title{font-size:14px;font-weight:600;line-height:1.3;margin-bottom:8px;}
+.ex-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.badge-pres{font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--border);padding:5px 10px;color:var(--text);white-space:nowrap;letter-spacing:.3px;}
+.badge-pres.test{border-color:#ffd000;color:#ffd000;}
+.badge-pres.cardio{border-color:var(--accent);color:var(--accent);}
+.badge-pres.empty{color:var(--sub);}
+.badge-js{font-size:10px;font-weight:800;padding:5px 8px;border:1px solid #ffd000;color:#ffd000;letter-spacing:1px;white-space:nowrap;}
+.btn-timer{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:none;border:1px solid var(--accent);color:var(--accent);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;letter-spacing:.3px;}
+.btn-timer:active,.btn-timer:hover{background:var(--accent);color:#000;}
+.btn-timer svg{width:13px;height:13px;flex-shrink:0;}
+.ex-chevron{color:var(--sub);font-size:11px;flex-shrink:0;transition:transform .2s;margin-top:2px;}
+.ex.open .ex-chevron{transform:rotate(180deg);}
+
+.ex-body{display:none;padding:4px 16px 18px 50px;animation:fd .2s ease;}
+.ex.open .ex-body{display:block;}
+@keyframes fd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.tips{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.tip{display:flex;gap:8px;font-size:12px;color:#888;line-height:1.5;}
+.tip-ic{color:var(--accent);flex-shrink:0;margin-top:2px;}
+.ex-note{font-size:11px;color:#555;margin-top:8px;font-style:italic;}
+.video-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--accent);text-decoration:none;margin-bottom:10px;}
+.video-link:hover{text-decoration:underline;}
+
+.cardio-card{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.cardio-icon{font-size:20px;flex-shrink:0;}
+.cardio-info{flex:1;}
+.cardio-name{font-size:13px;font-weight:600;margin-bottom:4px;}
+.cardio-pres{font-size:20px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--accent);}
+.cardio-note{font-size:11px;color:var(--sub);margin-top:2px;}
+
+/* TIMER BAR */
+#tmr-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(13,13,13,.97);border-top:1px solid var(--border);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:10px 16px;align-items:center;gap:14px;}
+#tmr-bar.on{display:flex;}
+.tbar-ring{position:relative;width:46px;height:46px;flex-shrink:0;}
+.tbar-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.tbar-track{fill:none;stroke:var(--border);stroke-width:4;}
+.tbar-prog{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s;}
+.tbar-prog.warn{stroke:var(--red);}
+.tbar-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent);transition:color .3s;}
+.tbar-num.warn{color:var(--red);}
+.tbar-info{flex:1;min-width:0;}
+.tbar-lbl{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.tbar-ctx{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tbar-btns{display:flex;gap:8px;flex-shrink:0;}
+.tbar-btn{width:40px;height:40px;border:1px solid var(--border);background:none;color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s;}
+.tbar-btn:hover,.tbar-btn:active{border-color:var(--accent);color:var(--accent);}
+
+/* DOTS */
+.set-tracker{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;}
+.set-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0;}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(255,149,0,.5);}60%{box-shadow:0 0 0 5px rgba(255,149,0,0);}}
+.set-dot.current{border-color:var(--accent);background:rgba(255,149,0,.12);animation:pulse-dot 1.6s ease-out infinite;}
+.set-dot.done{background:#3a3a3a;border-color:#3a3a3a;}
+.set-dot.done::after{content:'';position:absolute;inset:5px;border-radius:50%;background:#666;}
+
+/* KG */
+.kg-wrap{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--border);padding:4px 9px 4px 10px;background:var(--card2);cursor:text;}
+.kg-input{width:40px;background:none;border:none;color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;outline:none;text-align:right;-moz-appearance:textfield;}
+.kg-input::-webkit-outer-spin-button,.kg-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.kg-input::placeholder{color:#444;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;line-height:1.6;}
+.kg-lbl{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;font-weight:600;}
+
+@media(max-width:380px){.ex-body{padding-left:16px;}}
+</style>
+</head>
+<body>
+
+<!-- TIMER BAR -->
+<div id="tmr-bar">
+  <div class="tbar-ring">
+    <svg viewBox="0 0 46 46">
+      <circle class="tbar-track" cx="23" cy="23" r="19"/>
+      <circle class="tbar-prog" id="tbar-prog" cx="23" cy="23" r="19"/>
+    </svg>
+    <div class="tbar-num" id="tbar-num">90</div>
+  </div>
+  <div class="tbar-info">
+    <div class="tbar-lbl">Timer recupero</div>
+    <div class="tbar-ctx" id="tbar-ctx">—</div>
+  </div>
+  <div class="tbar-btns">
+    <button class="tbar-btn" id="tbar-pause-btn" onclick="togglePause()">⏸</button>
+    <button class="tbar-btn" onclick="closeTimer()">✕</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hd">
+  <div class="hd-name">RAFFAELE<br><span>PANNULLO</span></div>
+  <div class="hd-row">
+    <span class="pill goal">Ricomposizione Corporea</span>
+    <span class="pill">A·B·C · 5 Settimane</span>
+    <span class="pill">24 Apr 2026</span>
+    <button class="pill" id="wl-btn" onclick="toggleWakeLock()">☀ Schermo ON</button>
+  </div>
+</div>
+
+<!-- DOPPIA PROGRESSIONE NOTE -->
+<div class="info-box">
+  <div class="info-title">Doppia Progressione</div>
+  <div class="info-body">Per gli esercizi con range di rep (es. 8-10): inizia dal numero basso. Raggiungi il numero alto mantenendo il RIR indicato → aumenta il carico e riparte dal numero basso.</div>
+</div>
+
+<!-- WEEK BAR -->
+<div class="week-bar">
+  <button class="wk-btn test active" onclick="switchWeek(0)">W1 · Test</button>
+  <button class="wk-btn" onclick="switchWeek(1)">W2</button>
+  <button class="wk-btn" onclick="switchWeek(2)">W3</button>
+  <button class="wk-btn" onclick="switchWeek(3)">W4</button>
+  <button class="wk-btn" onclick="switchWeek(4)">W5</button>
+</div>
+
+<!-- SESSION TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0)">Allenamento A</button>
+  <button class="tab" onclick="switchTab(1)">Allenamento B</button>
+  <button class="tab" onclick="switchTab(2)">Allenamento C</button>
+</div>
+
+<div class="session active" id="s0"></div>
+<div class="session" id="s1"></div>
+<div class="session" id="s2"></div>
+
+<script>
+/* ── DATA ── */
+const SESSIONS = [
+  {
+    id:'A', label:'Allenamento A',
+    groups:[
+      {label:'PETTO', colorVar:'--petto', exercises:[
+        {id:'a01',name:'Distensioni Manubri su Piana',recovery:90,
+         tips:['Scapole retratte e depresse — spalle giù durante la spinta','Eccentrica lenta 3-4 sec, poi spingi esplosivo','Polsi neutri — manubrio centrato sul palmo'],
+         note:'Discesa lenta · set up perfetto ad ogni rep',
+         weeks:[{type:'test',reps:12},{sets:4,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:4,reps:'9',rir:2},null]},
+        {id:'a02',name:'Converging Chest Press',recovery:90,
+         tips:['Spingi i manubri verso il centro — traiettoria convergente','Gomiti a 45-60° rispetto al busto, non troppo aperti'],
+         note:'Set up perfetto ad ogni rep',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'7',rir:4},{sets:4,reps:'7',rir:3},{sets:4,reps:'8',rir:2},null]},
+        {id:'a03',name:'Croci ai Cavi — Cavi Bassi',recovery:60,
+         tips:['Porta le braccia in alto e al centro — isola la porzione clavicolare','Leggera flessione al gomito fissa per tutto il ROM','Spremi il petto 1 sec in chiusura'],
+         note:'Tensione continua · esplosivo',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'10',rir:1},{sets:3,reps:'10',rir:1},{sets:3,reps:'10',rir:1},null]},
+      ]},
+      {label:'CARDIO', colorVar:'--cardio', exercises:[
+        {id:'a-c',name:'Vogatore',isCardio:true,note:'Intensità alta da mantenere a stento',
+         tips:['Spingi prima con le gambe, poi tira con le braccia','Mantieni un ritmo costante — non partire troppo forte'],
+         weeks:[null,{type:'cardio',dur:'5 min'},{type:'cardio',dur:'8 min'},{type:'cardio',dur:'9 min'},{type:'cardio',dur:'11 min'}]},
+      ]},
+      {label:'QUADRICIPITI', colorVar:'--gambe', exercises:[
+        {id:'a04',name:'Squat Machine',recovery:60,
+         tips:['Piedi alla larghezza delle spalle — punta leggermente in fuori','Scendi fino a coscia parallela o oltre','Tensione continua — non sbloccare le ginocchia in cima'],
+         note:'Tensione continua',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:3,reps:'10',rir:2},null]},
+        {id:'a05',name:'Leg Extension Unilaterale',recovery:120,recLabel:"Rec. completo <2'",
+         tips:['Unilaterale: una gamba per volta — corregge le asimmetrie','Spremi il quadricipite in cima 1 sec prima di scendere','Scendi lentamente per mantenere la tensione'],
+         note:'Tensione continua · rec. completo <2\'',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:3,reps:'10',rir:2},null]},
+      ]},
+      {label:'BICIPITI', colorVar:'--bicipiti', exercises:[
+        {id:'a06',name:'Curls Panca 45°',recovery:60,
+         tips:['Panca a 45° = bicipite in stiramento all\'inizio — ROM massimo','Gomiti fissi, non avanzare durante il curl','Supina il polso mentre sali per il picco del bicipite'],
+         note:'Tensione continua',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:3,reps:'10',rir:2},null]},
+      ]},
+    ]
+  },
+  {
+    id:'B', label:'Allenamento B',
+    groups:[
+      {label:'TRAPEZIO / DORSO', colorVar:'--trapezio', exercises:[
+        {id:'b01',name:'Rematore Manubri Panca 30°',recovery:150,recLabel:"2'–3'",
+         tips:['Petto appoggiato alla panca — torace fermo, niente oscillazioni','Porta i gomiti verso il soffitto, non verso i lati','Stendi completamente le braccia in basso — ROM completo'],
+         note:'Set up perfetto · esplosivo',
+         weeks:[{type:'test',reps:12},{sets:4,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:4,reps:'9',rir:2},null]},
+      ]},
+      {label:'DORSO', colorVar:'--dorso', exercises:[
+        {id:'b02',name:'Lat Machine Supina',recovery:90,video:'https://youtu.be/K69NvwHavos?t=81',
+         tips:['Presa supina (palmi verso di te) — più bicipite, gomiti vicini','Scapole verso il basso durante il pull — spalle mai su','Stendi le braccia completamente in cima'],
+         note:'Set up perfetto · esplosivo',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'7',rir:4},{sets:4,reps:'7',rir:3},{sets:4,reps:'8',rir:2},null]},
+        {id:'b03',name:'Pull Down Sbarra',recovery:60,
+         tips:['Presa larga — circa 1,5× larghezza spalle','Tira la sbarra verso il petto, non il mento verso la sbarra','Scapole retratte e abbassate durante il pull'],
+         note:'Set up perfetto · esplosivo',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'10',rir:1},{sets:3,reps:'10',rir:1},{sets:3,reps:'10',rir:1},null]},
+      ]},
+      {label:'CARDIO', colorVar:'--cardio', exercises:[
+        {id:'b-c',name:'Air Bike',isCardio:true,note:'Intensità alta da mantenere a stento',
+         tips:['Usa braccia e gambe insieme — massimo dispendio calorico','Mantieni l\'intensità costante — non rallentare a metà'],
+         weeks:[null,{type:'cardio',dur:'5 min'},{type:'cardio',dur:'8 min'},{type:'cardio',dur:'9 min'},{type:'cardio',dur:'11 min'}]},
+      ]},
+      {label:'FEMORALI', colorVar:'--femorali', exercises:[
+        {id:'b04',name:'Leg Curls',recovery:60,
+         tips:['Fianchi incollati al pad — non alzare il bacino durante il curl','Contrai il femorale in cima 1 sec prima di scendere','Fase eccentrica lenta per mantenere la tensione'],
+         note:'Tensione continua',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:3,reps:'10',rir:2},null]},
+      ]},
+      {label:'SPALLE', colorVar:'--spalle', exercises:[
+        {id:'b05',name:'Alzate Laterali Panca 75°',recovery:120,recLabel:"Rec. completo <2'",
+         tips:['Panca a 75° elimina lo slancio — deltoide puro','Il gomito guida il movimento — polso neutro','Arriva all\'altezza della spalla, non oltre'],
+         note:'Tensione continua',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:3,reps:'10',rir:2},null]},
+      ]},
+      {label:'TRICIPITI', colorVar:'--tricipiti', exercises:[
+        {id:'b06',name:'Pushdown Corda',recovery:30,video:'https://youtu.be/1zevKZn_n1E?t=6',
+         tips:['Gomiti fissi ai fianchi — non aprirli durante l\'estensione','Separa le mani verso i fianchi in fondo per contrazione massima','Movimento lento e fluido'],
+         note:'Tensione continua · fluido',
+         weeks:[{type:'test',reps:12},{sets:3,reps:'8',rir:4},{sets:3,reps:'9',rir:3},{sets:3,reps:'10',rir:2},null]},
+      ]},
+    ]
+  },
+  {
+    id:'C', label:'Allenamento C',
+    groups:[
+      {label:'QUADRICIPITI — forza', colorVar:'--gambe', exercises:[
+        {id:'c01',name:'Squat Machine',recovery:150,recLabel:"2'–3'",
+         tips:['Seduta di forza: carichi alti, basse rep, esplosivo in salita','Scendi controllato, risali il più veloce possibile','ROM completo — coscia almeno parallela'],
+         note:'Set up perfetto · esplosivo',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'3',rir:4},{sets:4,reps:'3',rir:3},{sets:4,reps:'4',rir:2},null]},
+      ]},
+      {label:'JUMP SET — Gambe', colorVar:'--femorali', isJs:true, exercises:[
+        {id:'c02',name:'Leg Extension Unilaterale',recovery:30,isJs:true,video:'https://youtu.be/',
+         tips:['Jump Set: Leg Ext → 30″ → Leg Curls → rec. completo · poi ripeti','Concentrati sulla contrazione del quadricipite in cima','Scendi lentamente — tensione continua'],
+         note:'Jump Set con Leg Curls · 30″ tra gli esercizi',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'4',rir:4},{sets:4,reps:'4',rir:3},{sets:3,reps:'4',rir:3},null]},
+        {id:'c03',name:'Leg Curls',recovery:30,isJs:true,
+         tips:['Eseguito subito dopo Leg Extension — solo 30″ tra i due','Fianchi incollati al pad durante il curl','Dopo questo esercizio: recupero completo, poi riparti con Leg Ext'],
+         note:'Jump Set con Leg Extension',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'4',rir:1},{sets:3,reps:'4',rir:1},{sets:3,reps:'4',rir:1},null]},
+      ]},
+      {label:'CARDIO', colorVar:'--cardio', exercises:[
+        {id:'c-c',name:'Cyclette',isCardio:true,note:'Intensità 18',
+         tips:['Mantieni intensità 18 per tutta la durata senza abbassarla'],
+         weeks:[null,{type:'cardio',dur:'7 min'},{type:'cardio',dur:'9 min'},{type:'cardio',dur:'8 min'},{type:'cardio',dur:'12 min'}]},
+      ]},
+      {label:'JUMP SET — Braccia', colorVar:'--tricipiti', isJs:true, exercises:[
+        {id:'c04',name:'Tricipiti Cavo Basso Dietro la Testa',recovery:30,isJs:true,video:'https://youtu.be/1zevKZn_n1E?t=6',
+         tips:['Jump Set: Tricipiti → 30″ → Bayesian Curl → 45″ rec. · poi ripeti','Cavo basso: distendi il gomito portando le mani sopra la testa','Tensione continua lungo tutto il ROM'],
+         note:'Jump Set con Bayesian Curl · 30″ tra gli esercizi',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'8',rir:4},{sets:4,reps:'8',rir:3},{sets:4,reps:'8',rir:2},null]},
+        {id:'c05',name:'Doppio Bayesian Curl',recovery:45,isJs:true,
+         tips:['Doppio: entrambe le braccia ai cavi contemporaneamente','Cavo dietro di te — gomito avanzato per stirare il bicipite','45″ di rec. dopo questo, poi si riparte con i tricipiti'],
+         note:'Jump Set con Tricipiti · 45″ di rec.',
+         weeks:[{type:'test',reps:10},{sets:3,reps:'8',rir:4},{sets:4,reps:'8',rir:3},{sets:5,reps:'8',rir:2},null]},
+      ]},
+      {label:'ADDOMINALI', colorVar:'--addominali', exercises:[
+        {id:'c06',name:'Leg Raise',recovery:90,
+         tips:['Lombare incollata al suolo — non inarcare la schiena','Porta le gambe verso il petto senza slancio','Scendi lentamente — non appoggiare i talloni al suolo tra le rep'],
+         note:'Tensione continua · fluido',
+         weeks:[{type:'test',reps:'Max'},{sets:3,reps:'9',rir:4},{sets:4,reps:'9',rir:3},{sets:4,reps:'10',rir:2},null]},
+      ]},
+    ]
+  }
+];
+
+/* ── STATE ── */
+let currentWeek = parseInt(localStorage.getItem('rp_week')||'0');
+let currentTab  = 0;
+
+/* ── RENDER ── */
+const TIMER_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>`;
+
+function fmtSec(s){return s>=60?`${Math.floor(s/60)}'${s%60?String(s%60).padStart(2,'0')+'″':''}`:s+'″';}
+
+function presText(w){
+  if(!w) return '—';
+  if(w.type==='test') return `TEST · ${w.reps} rep`;
+  if(w.type==='cardio') return w.dur;
+  return `${w.sets} × ${w.reps} rep · RIR ${w.rir}`;
+}
+function presClass(w){
+  if(!w) return 'badge-pres empty';
+  if(w.type==='test') return 'badge-pres test';
+  if(w.type==='cardio') return 'badge-pres cardio';
+  return 'badge-pres';
+}
+function getSets(w){
+  if(!w||w.type==='test') return 5;
+  if(w.type==='cardio') return 0;
+  return w.sets;
+}
+
+function buildSession(si){
+  const sess = SESSIONS[si];
+  const container = document.getElementById('s'+si);
+  let exIdx = 1;
+  let html = `<div class="warmup"><div class="warmup-title">Riscaldamento (ogni seduta)</div><div class="warmup-body">Halo disco per la scapolo-omerale · Squat corpo libero per la coxo-femorale<br>2×10 lente + Calf 2×10 lente + Band pull apart 2×15</div></div>`;
+
+  sess.groups.forEach(grp=>{
+    const color = `var(${grp.colorVar})`;
+    const jsLabel = grp.isJs ? '<span class="js-badge">JS</span>' : '';
+    html += `<div class="grp" style="color:${color}"><div class="grp-dot" style="background:${color}"></div>${grp.label}${jsLabel}</div>`;
+
+    grp.exercises.forEach(ex=>{
+      const w = ex.weeks[currentWeek];
+
+      if(ex.isCardio){
+        const pres = w ? w.dur : '—';
+        html += `<div class="cardio-card">
+          <div class="cardio-icon">🚴</div>
+          <div class="cardio-info">
+            <div class="cardio-name">${ex.name}</div>
+            <div class="cardio-pres" id="cpres-${ex.id}">${pres}</div>
+            <div class="cardio-note">${ex.note}</div>
+          </div>
+        </div>`;
+        return;
+      }
+
+      const jsCls = ex.isJs ? ' js-pair' : '';
+      const timerLabel = ex.recLabel || fmtSec(ex.recovery);
+      const timerBtn = ex.recovery > 0
+        ? `<button class="btn-timer" onclick="ev(event);startTimer(${ex.recovery},'${ex.name}')">${TIMER_SVG}⏱ ${timerLabel}</button>`
+        : '';
+      const videoLink = ex.video
+        ? `<a class="video-link" href="${ex.video}" target="_blank">▶ Video</a>`
+        : '';
+      const tipsHtml = ex.tips.map(t=>`<div class="tip"><span class="tip-ic">▸</span><span>${t}</span></div>`).join('');
+
+      html += `<div class="ex${jsCls}" data-eid="${ex.id}" onclick="toggle(this)">
+        <div class="ex-head">
+          <span class="ex-idx">${String(exIdx).padStart(2,'0')}</span>
+          <div class="ex-main">
+            <div class="ex-title">${ex.name}${ex.isJs?'<span class="badge-js" style="margin-left:8px">JS</span>':''}</div>
+            <div class="ex-meta">
+              <span class="${presClass(w)}" id="pres-${ex.id}">${presText(w)}</span>
+              ${timerBtn}
+              <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+            </div>
+          </div>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-body">
+          ${videoLink}
+          <div class="tips">${tipsHtml}</div>
+          ${ex.note?`<div class="ex-note">${ex.note}</div>`:''}
+        </div>
+      </div>`;
+      exIdx++;
+    });
+  });
+
+  container.innerHTML = html;
+  initTrackers(si);
+  initWeights(si);
+}
+
+function buildAll(){
+  SESSIONS.forEach((_,i)=>buildSession(i));
+  // restore week btn state
+  document.querySelectorAll('.wk-btn').forEach((b,i)=>b.classList.toggle('active',i===currentWeek));
+}
+
+/* ── WEEK SWITCH ── */
+function switchWeek(idx){
+  currentWeek = idx;
+  localStorage.setItem('rp_week', idx);
+  document.querySelectorAll('.wk-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+
+  // update all exercise prescriptions
+  SESSIONS.forEach(sess=>{
+    sess.groups.forEach(grp=>{
+      grp.exercises.forEach(ex=>{
+        const w = ex.weeks[idx];
+        if(ex.isCardio){
+          const el = document.getElementById('cpres-'+ex.id);
+          if(el) el.textContent = w ? w.dur : '—';
+          return;
+        }
+        const el = document.getElementById('pres-'+ex.id);
+        if(el){el.textContent=presText(w);el.className=presClass(w);}
+        // rebuild dots
+        const card = document.querySelector(`.ex[data-eid="${ex.id}"]`);
+        if(card){
+          const old=card.querySelector('.set-tracker');
+          if(old) old.remove();
+          buildDots(card, ex, w);
+        }
+      });
+    });
+  });
+}
+
+/* ── TAB SWITCH ── */
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.session').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  document.querySelectorAll('.ex').forEach(e=>e.classList.remove('open'));
+  currentTab=i;
+}
+
+/* ── TOGGLE CARD ── */
+function toggle(card){
+  const isOpen=card.classList.contains('open');
+  document.querySelectorAll('.ex').forEach(e=>e.classList.remove('open'));
+  if(!isOpen){card.classList.add('open');setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}
+}
+function ev(e){e.stopPropagation();}
+
+/* ── DOTS ── */
+function buildDots(card, ex, w){
+  const n = getSets(w);
+  if(!n) return;
+  const meta = card.querySelector('.ex-meta');
+  const wrap = document.createElement('div');
+  wrap.className='set-tracker';
+  for(let i=0;i<n;i++){
+    const b=document.createElement('button');
+    b.className='set-dot';
+    b.title=`Serie ${i+1}`;
+    b.setAttribute('aria-label',`Serie ${i+1}`);
+    b.onclick=e=>{e.stopPropagation();b.classList.toggle('done');refreshDots(wrap);};
+    wrap.appendChild(b);
+  }
+  meta.appendChild(wrap);
+  refreshDots(wrap);
+}
+function refreshDots(wrap){
+  let found=false;
+  wrap.querySelectorAll('.set-dot').forEach(d=>{
+    d.classList.remove('current');
+    if(!found&&!d.classList.contains('done')){d.classList.add('current');found=true;}
+  });
+}
+function initTrackers(si){
+  const sess = SESSIONS[si];
+  sess.groups.forEach(grp=>{
+    grp.exercises.forEach(ex=>{
+      if(ex.isCardio) return;
+      const card = document.querySelector(`.ex[data-eid="${ex.id}"]`);
+      if(!card) return;
+      buildDots(card, ex, ex.weeks[currentWeek]);
+    });
+  });
+}
+
+/* ── KG WEIGHTS ── */
+function initWeights(si){
+  document.querySelectorAll(`#s${si} .ex[data-eid]`).forEach(ex=>{
+    const key='rp_kg_'+ex.dataset.eid;
+    const inp=ex.querySelector('.kg-input');
+    if(!inp) return;
+    const saved=localStorage.getItem(key);
+    if(saved) inp.value=saved;
+    inp.addEventListener('input',()=>{
+      if(inp.value.trim()) localStorage.setItem(key,inp.value.trim());
+      else localStorage.removeItem(key);
+    });
+    inp.addEventListener('click',e=>e.stopPropagation());
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+  });
+}
+
+/* ── TIMER ── */
+let interval=null,total=0,remaining=0,paused=false;
+const CIRC=2*Math.PI*19;
+
+function startTimer(sec,ctx){
+  clearInterval(interval);
+  total=sec;remaining=sec;paused=false;
+  document.getElementById('tbar-pause-btn').textContent='⏸';
+  document.getElementById('tbar-ctx').textContent=ctx;
+  const prog=document.getElementById('tbar-prog');
+  prog.style.strokeDasharray=CIRC;
+  prog.style.strokeDashoffset=0;
+  document.getElementById('tmr-bar').classList.add('on');
+  document.body.classList.add('tmr-active');
+  render();
+  interval=setInterval(()=>{
+    if(!paused&&remaining>0){remaining--;render();}
+    else if(remaining<=0){clearInterval(interval);flashDone();}
+  },1000);
+}
+function render(){
+  const n=document.getElementById('tbar-num');
+  const p=document.getElementById('tbar-prog');
+  n.textContent=remaining;
+  p.style.strokeDashoffset=CIRC*(1-remaining/total);
+  const w=remaining<=10;
+  n.classList.toggle('warn',w);
+  p.classList.toggle('warn',w);
+  if(remaining===3||remaining===2||remaining===1) playBeep(880,.15,.9);
+}
+function flashDone(){
+  const bar=document.getElementById('tmr-bar');
+  let c=0;
+  const f=setInterval(()=>{
+    bar.style.background=c%2===0?'rgba(255,149,0,.25)':'rgba(13,13,13,.97)';
+    if(++c>5){clearInterval(f);bar.style.background='';}
+  },220);
+  playBeep(1100,.2,1.0);
+  setTimeout(()=>playBeep(1100,.2,1.0),280);
+  setTimeout(()=>playBeep(1100,.3,1.0),560);
+  if(navigator.vibrate) navigator.vibrate([200,100,200]);
+}
+function togglePause(){paused=!paused;document.getElementById('tbar-pause-btn').textContent=paused?'▶':'⏸';}
+function closeTimer(){clearInterval(interval);document.getElementById('tmr-bar').classList.remove('on');document.body.classList.remove('tmr-active');}
+
+/* ── AUDIO ── */
+let _actx=null;
+function _getCtx(){
+  if(!_actx)_actx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_actx.state==='suspended')_actx.resume();
+  return _actx;
+}
+function playBeep(freq,dur,vol){
+  try{
+    const ctx=_getCtx();
+    const o=ctx.createOscillator(),g=ctx.createGain(),c=ctx.createDynamicsCompressor();
+    o.connect(g);g.connect(c);c.connect(ctx.destination);
+    o.type='square';o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+
+/* ── WAKE LOCK ── */
+let _wl=null,_wlEnabled=false;
+async function toggleWakeLock(){
+  _wlEnabled=!_wlEnabled;
+  if(_wlEnabled){await _requestWakeLock();}
+  else{if(_wl){await _wl.release();_wl=null;}_updateWlBtn(false);}
+}
+async function _requestWakeLock(){
+  if(!('wakeLock' in navigator)){_wlEnabled=false;return;}
+  try{_wl=await navigator.wakeLock.request('screen');_updateWlBtn(true);_wl.addEventListener('release',()=>{_wl=null;});}
+  catch(e){_wlEnabled=false;_updateWlBtn(false);}
+}
+function _updateWlBtn(active){document.getElementById('wl-btn').classList.toggle('active',active);}
+document.addEventListener('visibilitychange',async()=>{if(_wlEnabled&&document.visibilityState==='visible')await _requestWakeLock();});
+
+/* ── INIT ── */
+buildAll();
+// restore week selector visual
+document.querySelectorAll('.wk-btn').forEach((b,i)=>b.classList.toggle('active',i===currentWeek));
+</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>
