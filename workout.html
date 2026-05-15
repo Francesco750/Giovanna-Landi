@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Scheda — Francesco D'Aniello</title>
+<meta name="theme-color" content="#0c0c0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Workout">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0c0c0c;--card:#161616;--card2:#1e1e1e;--border:#272727;
+  --accent:#d4ff00;--red:#ff4500;--text:#f2f2f2;--sub:#888;
+  --petto:#ff4500;--spalle:#ff9500;--bicipiti:#ffd000;
+  --dorso:#00c8ff;--tricipiti:#c264ff;--gambe:#00e676;--addominali:#ff4081;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
+
+/* HEADER */
+.hd{padding:24px 16px 18px;border-bottom:1px solid var(--border);}
+.hd-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,10vw,72px);line-height:.92;letter-spacing:1px;}
+.hd-name span{color:var(--accent);}
+.hd-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;}
+.pill{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--sub);}
+.pill.goal{background:var(--accent);color:#000;border-color:var(--accent);}
+button.pill{background:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .2s,color .2s,background .2s;}
+button.pill.active{border-color:var(--accent);color:var(--accent);background:rgba(212,255,0,.08);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
+.stat{padding:12px 0 12px 14px;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.stat-l{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--accent);}
+.stat-v.warn{color:var(--red);}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;background:var(--bg);}
+.tab{flex:1;padding:13px 8px;background:none;border:none;border-bottom:2px solid transparent;color:var(--sub);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* SESSION */
+.session{display:none;padding-bottom:48px;}
+.session.active{display:block;}
+body.tmr-active .session.active{padding-bottom:88px;}
+
+/* GROUP LABEL */
+.grp{display:flex;align-items:center;gap:10px;padding:22px 16px 8px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2.5px;}
+.grp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* EXERCISE CARD */
+.ex{background:var(--card);border-bottom:1px solid var(--border);}
+.ex-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.ex-idx{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--sub);min-width:22px;padding-top:1px;}
+.ex-main{flex:1;min-width:0;}
+.ex-title{font-size:14px;font-weight:600;line-height:1.35;margin-bottom:8px;}
+
+/* META ROW */
+.ex-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.badge-serie{font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--border);padding:5px 10px;color:var(--text);white-space:nowrap;letter-spacing:.3px;}
+.btn-timer{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:none;border:1px solid var(--accent);color:var(--accent);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;letter-spacing:.3px;}
+.btn-timer:active,.btn-timer:hover{background:var(--accent);color:#000;}
+.btn-timer svg{width:13px;height:13px;flex-shrink:0;}
+.badge-tabata{font-size:11px;font-weight:800;padding:5px 10px;border:1px solid var(--addominali);color:var(--addominali);letter-spacing:1px;}
+
+.ex-chevron{color:var(--sub);font-size:11px;flex-shrink:0;transition:transform .2s;margin-top:2px;}
+.ex.open .ex-chevron{transform:rotate(180deg);}
+
+/* CARD BODY */
+.ex-body{display:none;padding:4px 16px 18px 50px;animation:fd .2s ease;}
+.ex.open .ex-body{display:block;}
+@keyframes fd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+.desc{font-size:13px;color:#aaa;line-height:1.72;margin-bottom:12px;}
+.tips{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.tip{display:flex;gap:8px;font-size:12px;color:#888;line-height:1.5;}
+.tip-ic{color:var(--accent);flex-shrink:0;margin-top:2px;}
+
+.method-box{background:var(--card2);border-left:3px solid var(--red);padding:10px 14px;margin-bottom:12px;}
+.method-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:4px;}
+.method-body{font-size:12px;color:#bbb;line-height:1.65;}
+
+/* ── TIMER BAR (compatto, non fullscreen) ── */
+#tmr-bar{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(13,13,13,.97);border-top:1px solid var(--border);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  padding:10px 16px;align-items:center;gap:14px;
+}
+#tmr-bar.on{display:flex;}
+
+.tbar-ring{position:relative;width:46px;height:46px;flex-shrink:0;}
+.tbar-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.tbar-track{fill:none;stroke:var(--border);stroke-width:4;}
+.tbar-prog{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s;}
+.tbar-prog.warn{stroke:var(--red);}
+.tbar-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent);transition:color .3s;}
+.tbar-num.warn{color:var(--red);}
+
+.tbar-info{flex:1;min-width:0;}
+.tbar-lbl{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.tbar-ctx{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.tbar-btns{display:flex;gap:8px;flex-shrink:0;}
+.tbar-btn{width:40px;height:40px;border:1px solid var(--border);background:none;color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s;}
+.tbar-btn:hover,.tbar-btn:active{border-color:var(--accent);color:var(--accent);}
+
+@keyframes flash-bar{0%,100%{background:rgba(13,13,13,.97);}50%{background:rgba(212,255,0,.22);}}
+
+/* SERIES TRACKER */
+.set-tracker{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;}
+.set-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0;}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(212,255,0,.5);}60%{box-shadow:0 0 0 5px rgba(212,255,0,.0);}}
+.set-dot.current{border-color:var(--accent);background:rgba(212,255,0,.12);animation:pulse-dot 1.6s ease-out infinite;}
+.set-dot.done{background:#3a3a3a;border-color:#3a3a3a;}
+.set-dot.done::after{content:'';position:absolute;inset:5px;border-radius:50%;background:#666;}
+
+/* KG INPUT */
+.kg-wrap{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--border);padding:4px 9px 4px 10px;background:var(--card2);cursor:text;}
+.kg-input{width:40px;background:none;border:none;color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;outline:none;text-align:right;-moz-appearance:textfield;}
+.kg-input::-webkit-outer-spin-button,.kg-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.kg-input::placeholder{color:#444;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;line-height:1.6;}
+.kg-lbl{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;font-weight:600;}
+
+@media(max-width:380px){
+  .ex-body{padding-left:16px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .stat:nth-child(2){border-right:none;}
+  .stat:nth-child(3){border-right:1px solid var(--border);}
+}
+</style>
+</head>
+<body>
+
+<!-- PIN LOCK -->
+<div id="pin-overlay" style="
+  position:fixed;inset:0;z-index:9999;background:#0c0c0c;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;gap:0;
+">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;color:#f2f2f2;margin-bottom:6px;">WORKOUT</div>
+  <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:48px;">Francesco D'Aniello</div>
+
+  <!-- dots -->
+  <div id="pin-dots" style="display:flex;gap:14px;margin-bottom:40px;">
+    <span class="pd"></span><span class="pd"></span><span class="pd"></span>
+    <span class="pd"></span><span class="pd"></span><span class="pd"></span><span class="pd"></span>
+  </div>
+
+  <!-- error msg -->
+  <div id="pin-err" style="font-size:12px;color:#ff4500;letter-spacing:1px;text-transform:uppercase;height:18px;margin-bottom:20px;"></div>
+
+  <!-- keypad -->
+  <div id="pin-pad" style="display:grid;grid-template-columns:repeat(3,72px);gap:12px;">
+    <button class="pk" data-n="1">1</button>
+    <button class="pk" data-n="2">2</button>
+    <button class="pk" data-n="3">3</button>
+    <button class="pk" data-n="4">4</button>
+    <button class="pk" data-n="5">5</button>
+    <button class="pk" data-n="6">6</button>
+    <button class="pk" data-n="7">7</button>
+    <button class="pk" data-n="8">8</button>
+    <button class="pk" data-n="9">9</button>
+    <button class="pk" data-n="del" style="font-size:18px;">⌫</button>
+    <button class="pk" data-n="0">0</button>
+    <button class="pk" data-n="ok" style="background:#d4ff00;color:#000;font-weight:700;">OK</button>
+  </div>
+</div>
+
+<style>
+.pd{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #444;background:transparent;transition:background .15s,border-color .15s;}
+.pd.filled{background:#d4ff00;border-color:#d4ff00;}
+.pd.err{background:#ff4500;border-color:#ff4500;}
+.pk{width:72px;height:72px;border-radius:50%;border:1px solid #272727;background:#161616;color:#f2f2f2;font-family:'DM Sans',sans-serif;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s;}
+.pk:active{background:#272727;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:shake .35s ease;}
+</style>
+
+<script>
+(function(){
+  const PIN = '9130283';
+  let entered = '';
+  const overlay = document.getElementById('pin-overlay');
+  const dots = document.querySelectorAll('.pd');
+  const err = document.getElementById('pin-err');
+
+  function updateDots(){
+    dots.forEach((d,i)=>{
+      d.classList.toggle('filled', i < entered.length);
+      d.classList.remove('err');
+    });
+  }
+
+  function shake(){
+    dots.forEach(d=>{d.classList.add('err');d.classList.remove('filled');});
+    document.getElementById('pin-dots').classList.add('shake');
+    err.textContent = 'PIN errato';
+    setTimeout(()=>{
+      document.getElementById('pin-dots').classList.remove('shake');
+      dots.forEach(d=>d.classList.remove('err'));
+      err.textContent='';
+      entered='';
+      updateDots();
+    },600);
+  }
+
+  function tryUnlock(){
+    if(entered === PIN){
+      overlay.style.transition='opacity .3s';
+      overlay.style.opacity='0';
+      setTimeout(()=>overlay.remove(),300);
+    } else {
+      shake();
+    }
+  }
+
+  document.getElementById('pin-pad').addEventListener('click',e=>{
+    const btn = e.target.closest('.pk');
+    if(!btn) return;
+    const n = btn.dataset.n;
+    if(n==='del'){ entered=entered.slice(0,-1); err.textContent=''; updateDots(); }
+    else if(n==='ok'){ tryUnlock(); }
+    else if(entered.length < PIN.length){ entered+=n; updateDots(); if(entered.length===PIN.length) tryUnlock(); }
+  });
+})();
+</script>
+<!-- /PIN LOCK -->
+
+<!-- TIMER BAR -->
+<div id="tmr-bar">
+  <div class="tbar-ring">
+    <svg viewBox="0 0 46 46">
+      <circle class="tbar-track" cx="23" cy="23" r="19"/>
+      <circle class="tbar-prog" id="tbar-prog" cx="23" cy="23" r="19"/>
+    </svg>
+    <div class="tbar-num" id="tbar-num">90</div>
+  </div>
+  <div class="tbar-info">
+    <div class="tbar-lbl">Timer recupero</div>
+    <div class="tbar-ctx" id="tbar-ctx">—</div>
+  </div>
+  <div class="tbar-btns">
+    <button class="tbar-btn" id="tbar-pause-btn" onclick="togglePause()" title="Pausa / Riprendi">⏸</button>
+    <button class="tbar-btn" onclick="closeTimer()" title="Chiudi">✕</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hd">
+  <div class="hd-name">FRANCESCO<br><span>D'ANIELLO</span></div>
+  <div class="hd-row">
+    <span class="pill goal">Massa Muscolare</span>
+    <span class="pill">Full Body · 45 min</span>
+    <span class="pill">07/05/2026</span>
+    <button class="pill" id="wl-btn" onclick="toggleWakeLock()" title="Mantieni schermo acceso">☀ Schermo ON</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-l">Altezza</div><div class="stat-v">180 cm</div></div>
+  <div class="stat"><div class="stat-l">Peso</div><div class="stat-v">82.6 kg</div></div>
+  <div class="stat"><div class="stat-l">BMI</div><div class="stat-v warn">25.5</div></div>
+  <div class="stat"><div class="stat-l">Inizio</div><div class="stat-v" style="font-size:15px;letter-spacing:0;padding-top:2px">11 Mag</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0)">1ª Seduta</button>
+  <button class="tab" onclick="switchTab(1)">2ª Seduta</button>
+</div>
+
+<!-- ═══ PRIMA SEDUTA ═══ -->
+<div class="session active" id="s0">
+
+  <div class="grp" style="color:var(--petto)"><div class="grp-dot" style="background:var(--petto)"></div>PETTO</div>
+
+  <div class="ex" data-eid="s0-01" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">01</span>
+      <div class="ex-main">
+        <div class="ex-title">Spinte Manubri Panca Piana</div>
+        <div class="ex-meta">
+          <span class="badge-serie">4 × 5 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Spinte Manubri – Panca Piana')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">Sdraiati sulla panca con un manubrio per mano. Braccia estese in partenza, scendi lentamente con i gomiti a 45° rispetto al busto, spingi verso l'alto. 4 serie pesanti da 5 rep: lavoro di forza massimale sul grande pettorale.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Scapole retratte e depresse — non lasciar salire le spalle durante la spinta</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Fase eccentrica lenta (2-3 sec in discesa) per massimizzare l'ipertrofia</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Polsi neutri — il manubrio rimane centrato sul palmo, non inclinato</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s0-02" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">02</span>
+      <div class="ex-main">
+        <div class="ex-title">Bilanciere Presa Stretta – Panca Piana</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 6 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Bilanciere Presa Stretta')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">Panca piana con bilanciere e presa alla larghezza delle spalle. La barra scende verso lo sterno basso. Coinvolge fortemente petto interno e tricipiti come co-motori principali.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Presa non troppo stretta: rischio ai polsi. Appena più stretta delle spalle</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Gomiti vicini al busto (30-40°) per massimizzare i tricipiti</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s0-03" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">03</span>
+      <div class="ex-main">
+        <div class="ex-title">Croci ai Cavi – Panca 60°</div>
+        <div class="ex-meta">
+          <span class="badge-serie">2 × 12 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Croci ai Cavi Panca 60°')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">Panca inclinata a 60° con cavi bassi ai lati. Le braccia si aprono con leggera flessione al gomito e si richiudono in alto. Il cavo mantiene tensione costante lungo tutto il ROM — vantaggio rispetto ai manubri. Lavora la zona clavicolare del petto.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>2×12: focus sul pump e sulla tensione continua, non sulla forza massimale</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Strizza il petto 1 secondo nella chiusura prima di riaprire le braccia</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s0-04" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">04</span>
+      <div class="ex-main">
+        <div class="ex-title">Spinte Manubri Panca 45° — Stripping</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 6-6-6</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Spinte 45° Stripping')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box">
+        <div class="method-title">🔥 Stripping (Drop Set)</div>
+        <div class="method-body">6 rep peso alto → abbassa i manubri (senza riposo) → 6 rep → abbassa → 6 rep finali. Il muscolo raggiunge l'esaurimento progressivo: massimo stimolo ipertrofico. Prepara i 3 pesi prima di iniziare la serie.</div>
+      </div>
+      <p class="desc">Spinte su panca inclinata a 45°: colpisce la porzione clavicolare del grande pettorale. Con lo stripping si ottiene volume elevato e forte stress metabolico in una sola serie.</p>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--spalle)"><div class="grp-dot" style="background:var(--spalle)"></div>SPALLE</div>
+
+  <div class="ex" data-eid="s0-05" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">05</span>
+      <div class="ex-main">
+        <div class="ex-title">Alzate Laterali ai Cavi</div>
+        <div class="ex-meta">
+          <span class="badge-serie">4 × 5 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Alzate Laterali ai Cavi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">In piedi di fianco al cavo basso, alza il braccio fino all'altezza della spalla con gomito leggermente flesso. Il cavo garantisce tensione anche nella fase bassa dove i manubri non caricano. 4×5 = carico elevato, lavoro di forza per il deltoide medio.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Movimento lento e controllato: no oscillazioni o slancio di schiena</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Il gomito guida il movimento — il polso rimane neutro</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s0-06" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">06</span>
+      <div class="ex-main">
+        <div class="ex-title">Face Pull — Stripping</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 6-6-6</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Face Pull Stripping')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box">
+        <div class="method-title">🔥 Stripping (Drop Set)</div>
+        <div class="method-body">3 mini-serie da 6 rep con carico decrescente, nessun riposo tra di esse. Recupero 90″ tra le serie complete.</div>
+      </div>
+      <p class="desc">Cavo alto con corda doppia. Porta la corda verso il viso aprendo i gomiti e ruotando esternamente le spalle. Fondamentale per la salute della spalla: rinforza deltoide posteriore e rotatori esterni.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Porta le mani verso le orecchie, non davanti al naso</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Apri le due mani della corda a fine movimento per la contrazione extra</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--bicipiti)"><div class="grp-dot" style="background:var(--bicipiti)"></div>BICIPITI</div>
+
+  <div class="ex" data-eid="s0-07" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">07</span>
+      <div class="ex-main">
+        <div class="ex-title">Curl Manubri — Stripping</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 6-6-6</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Curl Manubri Stripping')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box">
+        <div class="method-title">🔥 Stripping (Drop Set)</div>
+        <div class="method-body">6 rep peso alto → abbassa i manubri → 6 rep → abbassa → 6 rep finali. Nessun riposo tra le mini-serie. Stress metabolico massimo sul bicipite brachiale.</div>
+      </div>
+      <p class="desc">Curl alternato o simultaneo con manubri. Fletti il gomito portando il peso verso la spalla, supinando il polso durante la salita per massimizzare il picco del bicipite.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Il movimento parte solo dal gomito: nessuna oscillazione del busto</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Supina il polso mentre sali (ruota verso l'esterno) — gomito fisso lungo il fianco</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--addominali)"><div class="grp-dot" style="background:var(--addominali)"></div>ADDOMINALI</div>
+
+  <div class="ex" data-eid="s0-08" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">08</span>
+      <div class="ex-main">
+        <div class="ex-title">Addominali Alti e Bassi — Tabata</div>
+        <div class="ex-meta">
+          <span class="badge-tabata">TABATA</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(30,'🟢 LAVORO — 30 secondi')" style="border-color:var(--gambe);color:var(--gambe)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 30″ ON</button>
+          <button class="btn-timer" onclick="ev(event);startTimer(10,'🔴 RIPOSO — 10 secondi')" style="border-color:var(--red);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 10″ OFF</button>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box" style="border-color:var(--addominali)">
+        <div class="method-title" style="color:var(--addominali)">⚡ Protocollo Tabata</div>
+        <div class="method-body">8 round: 30″ lavoro → 10″ riposo. Usa i timer qui sopra alternandoli. Alterna crunch (alti) e leg raise (bassi) ogni round.</div>
+      </div>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Alti: crunch col mento al petto — non staccare tutta la schiena dal suolo</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Bassi: leg raise con lombare incollata al suolo — non inarcare la schiena</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /s0 -->
+
+
+<!-- ═══ SECONDA SEDUTA ═══ -->
+<div class="session" id="s1">
+
+  <div class="grp" style="color:var(--dorso)"><div class="grp-dot" style="background:var(--dorso)"></div>DORSO</div>
+
+  <div class="ex" data-eid="s1-01" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">01</span>
+      <div class="ex-main">
+        <div class="ex-title">Lat Machine Presa Inversa</div>
+        <div class="ex-meta">
+          <span class="badge-serie">4 × 5 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Lat Machine Presa Inversa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">Alla lat machine con presa supina (palmi verso di te), tira la barra verso il petto. La presa inversa aumenta il coinvolgimento del bicipite e permette ai gomiti di restare vicino al busto, colpendo il gran dorsale nella porzione inferiore.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Scapole avvicinano e scendono durante il pull — spalle che non salgono mai</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Stendi completamente le braccia nella fase alta per il ROM completo</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s1-02" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">02</span>
+      <div class="ex-main">
+        <div class="ex-title">Rematore Bilanciere — Stripping</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 6-6-6</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Rematore Bilanciere')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box">
+        <div class="method-title">🔥 Stripping (Drop Set)</div>
+        <div class="method-body">6 rep a peso massimale → scarica i dischi → 6 rep → scarica → 6 rep finali. Fatica metabolica massima per lo spessore dorsale.</div>
+      </div>
+      <p class="desc">Piegato in avanti a ~45° con bilanciere, tira la barra verso l'ombelico con schiena neutra. Esercizio fondamentale per lo spessore del dorso: romboidi, gran dorsale, trapezio medio-inferiore.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Schiena SEMPRE neutra: mai arrotondare la lombare con carichi pesanti</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>I gomiti salgono verso il soffitto, non verso i lati</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--spalle)"><div class="grp-dot" style="background:var(--spalle)"></div>PETTO + SPALLE — SUPER SET</div>
+
+  <div class="ex" data-eid="s1-03" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">03</span>
+      <div class="ex-main">
+        <div class="ex-title">Panca 45° Bilanciere + Lento Avanti Manubri</div>
+        <div class="ex-meta">
+          <span class="badge-serie">4 × 6+6</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(105,'Super Set – Panca 45° + Lento Avanti')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 1'45″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box" style="border-color:var(--spalle)">
+        <div class="method-title" style="color:var(--spalle)">⚡ Super Set</div>
+        <div class="method-body">Panca 45° bilanciere (6 rep) → senza riposo → Lento avanti manubri (6 rep) → Recupero 105″. Alto volume in poco tempo, petto alto e deltoidi in un colpo.</div>
+      </div>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Panca 45°: barra verso la parte alta del petto, gomiti a ~75°</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Lento avanti: manubri fino all'altezza della testa, schiena neutra</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Prepara i manubri vicino alla panca prima di iniziare ogni serie</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--tricipiti)"><div class="grp-dot" style="background:var(--tricipiti)"></div>TRICIPITI</div>
+
+  <div class="ex" data-eid="s1-04" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">04</span>
+      <div class="ex-main">
+        <div class="ex-title">Estensione Corda — con Stripping</div>
+        <div class="ex-meta">
+          <span class="badge-serie">2×10 + 1×6-6-6</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Estensione Corda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box">
+        <div class="method-title">🔥 Schema misto</div>
+        <div class="method-body">Serie 1: 10 rep · Serie 2: 10 rep · Serie 3 finale: 6 rep → scala peso → 6 rep → scala → 6 rep. Le prime due serie costruiscono volume, la terza brucia.</div>
+      </div>
+      <p class="desc">Cavo alto con corda doppia. Estendi i gomiti portando le mani in basso e separando le mani a fine movimento per la contrazione massima del tricipite.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Gomiti fissi ai lati del busto per tutto il movimento — non aprirli</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Separa le mani verso i fianchi a fine estensione per la contrazione extra</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s1-05" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">05</span>
+      <div class="ex-main">
+        <div class="ex-title">Dips tra Panche — Rest-Pause</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 8-5-3</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Dips Rest-Pause')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box" style="border-color:var(--tricipiti)">
+        <div class="method-title" style="color:var(--tricipiti)">💪 Rest-Pause</div>
+        <div class="method-body">8 rep → micro-pausa 10-15 sec (in posizione, senza scendere) → 5 rep → micro-pausa → 3 rep finali. Permette di andare oltre il cedimento aumentando il volume totale per serie.</div>
+      </div>
+      <p class="desc">Mani su una panca, talloni sull'altra. Fletti i gomiti scendendo e spingi verso l'alto. Esercizio a corpo libero ad alta intensità per tricipiti con tecnica rest-pause avanzata.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Busto leggermente inclinato in avanti per isolare meglio i tricipiti</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Gomito a 90° max: non scendere troppo, rischio alla capsula della spalla</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--gambe)"><div class="grp-dot" style="background:var(--gambe)"></div>GAMBE</div>
+
+  <div class="ex" data-eid="s1-06" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">06</span>
+      <div class="ex-main">
+        <div class="ex-title">Hack Squat</div>
+        <div class="ex-meta">
+          <span class="badge-serie">4 × 6 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Hack Squat')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">Sulla macchina hack squat con schiena appoggiata alla pedana inclinata, piedi a larghezza spalle leggermente più in alto. Scendi fino a 90° o oltre e risali. Isola il quadricipite meglio dello squat libero, scaricando la zona lombare.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Piedi alti = più femorali/glutei · Piedi bassi = più quadricipite</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Non bloccare le ginocchia in estensione: mantieni micro-flessione al top</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>4×6: carico elevato, ROM completo — esercizio di forza/ipertrofia</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex" data-eid="s1-07" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">07</span>
+      <div class="ex-main">
+        <div class="ex-title">Stacco Rumeni Manubri</div>
+        <div class="ex-meta">
+          <span class="badge-serie">3 × 6 rep</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(90,'Stacco Rumeni Manubri')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 90″</button>
+          <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <p class="desc">In piedi con un manubrio per mano, scendi lungo la parte anteriore della gamba con schiena neutra e ginocchia leggermente flesse. Fermati quando senti lo stiramento dei femorali, risali contraendo i glutei. Esercizio dominante per femorali e glutei.</p>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Schiena SEMPRE neutra: mai arrotondare la lombare — è il punto critico</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>I manubri scivolano lungo la gamba senza allontanarsi dal corpo</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Spingi i fianchi in avanti durante la salita per massimizzare i glutei</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp" style="color:var(--addominali)"><div class="grp-dot" style="background:var(--addominali)"></div>ADDOMINALI</div>
+
+  <div class="ex" data-eid="s1-08" onclick="toggle(this)">
+    <div class="ex-head">
+      <span class="ex-idx">08</span>
+      <div class="ex-main">
+        <div class="ex-title">Addominali Bassi e Obliqui — Tabata</div>
+        <div class="ex-meta">
+          <span class="badge-tabata">TABATA</span>
+          <button class="btn-timer" onclick="ev(event);startTimer(30,'🟢 LAVORO — 30 secondi')" style="border-color:var(--gambe);color:var(--gambe)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 30″ ON</button>
+          <button class="btn-timer" onclick="ev(event);startTimer(10,'🔴 RIPOSO — 10 secondi')" style="border-color:var(--red);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>⏱ 10″ OFF</button>
+        </div>
+      </div>
+      <span class="ex-chevron">▼</span>
+    </div>
+    <div class="ex-body">
+      <div class="method-box" style="border-color:var(--addominali)">
+        <div class="method-title" style="color:var(--addominali)">⚡ Protocollo Tabata</div>
+        <div class="method-body">8 round: 30″ lavoro → 10″ riposo. Rotazione consigliata: leg raise · flutter kicks · mountain climber · russian twist · oblique crunch — cambia ogni 1-2 round.</div>
+      </div>
+      <div class="tips">
+        <div class="tip"><span class="tip-ic">▸</span><span>Bassi: lombare incollata al suolo in ogni esercizio</span></div>
+        <div class="tip"><span class="tip-ic">▸</span><span>Obliqui: ruota dal busto, non dalle anche — il bacino rimane fermo</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /s1 -->
+
+<script>
+function ev(e){e.stopPropagation();}
+
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.session').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  document.querySelectorAll('.ex').forEach(e=>e.classList.remove('open'));
+}
+
+function toggle(card){
+  const isOpen=card.classList.contains('open');
+  document.querySelectorAll('.ex').forEach(e=>e.classList.remove('open'));
+  if(!isOpen){
+    card.classList.add('open');
+    setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  }
+}
+
+/* ── TIMER (barra compatta) ── */
+let interval=null,total=0,remaining=0,paused=false;
+const CIRC=2*Math.PI*19; // r=19 nel SVG della barra
+
+function startTimer(sec,ctx){
+  clearInterval(interval);
+  total=sec;remaining=sec;paused=false;
+  document.getElementById('tbar-pause-btn').textContent='⏸';
+  document.getElementById('tbar-ctx').textContent=ctx;
+  const prog=document.getElementById('tbar-prog');
+  prog.style.strokeDasharray=CIRC;
+  prog.style.strokeDashoffset=0;
+  document.getElementById('tmr-bar').classList.add('on');
+  document.body.classList.add('tmr-active');
+  render();
+  interval=setInterval(()=>{
+    if(!paused&&remaining>0){remaining--;render();}
+    else if(remaining<=0){clearInterval(interval);flash();}
+  },1000);
+}
+
+function render(){
+  const n=document.getElementById('tbar-num');
+  const p=document.getElementById('tbar-prog');
+  n.textContent=remaining;
+  p.style.strokeDashoffset=CIRC*(1-remaining/total);
+  const w=remaining<=10;
+  n.classList.toggle('warn',w);
+  p.classList.toggle('warn',w);
+  if(remaining===3||remaining===2||remaining===1)playBeep(880,.15,.9);
+}
+
+function flash(){
+  const bar=document.getElementById('tmr-bar');
+  let c=0;
+  const f=setInterval(()=>{
+    bar.style.background=c%2===0?'rgba(212,255,0,.28)':'rgba(13,13,13,.97)';
+    if(++c>5){clearInterval(f);bar.style.background='';}
+  },220);
+  playBeep(1100,.2,1.0);
+  setTimeout(()=>playBeep(1100,.2,1.0),280);
+  setTimeout(()=>playBeep(1100,.3,1.0),560);
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+}
+
+function togglePause(){
+  paused=!paused;
+  document.getElementById('tbar-pause-btn').textContent=paused?'▶':'⏸';
+}
+
+function closeTimer(){
+  clearInterval(interval);
+  document.getElementById('tmr-bar').classList.remove('on');
+  document.body.classList.remove('tmr-active');
+}
+
+/* ── AUDIO ── */
+let _actx=null;
+function _getCtx(){
+  if(!_actx)_actx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_actx.state==='suspended')_actx.resume();
+  return _actx;
+}
+function playBeep(freq,dur,vol){
+  try{
+    const ctx=_getCtx();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    const comp=ctx.createDynamicsCompressor();
+    comp.threshold.setValueAtTime(-3,ctx.currentTime);
+    comp.knee.setValueAtTime(0,ctx.currentTime);
+    comp.ratio.setValueAtTime(20,ctx.currentTime);
+    comp.attack.setValueAtTime(0.003,ctx.currentTime);
+    comp.release.setValueAtTime(0.1,ctx.currentTime);
+    o.connect(g);g.connect(comp);comp.connect(ctx.destination);
+    o.type='square';o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+
+/* ── WAKE LOCK (schermo sempre acceso) ── */
+let _wl=null,_wlEnabled=false;
+
+async function toggleWakeLock(){
+  _wlEnabled=!_wlEnabled;
+  if(_wlEnabled){
+    await _requestWakeLock();
+  }else{
+    if(_wl){await _wl.release();_wl=null;}
+    _updateWlBtn(false);
+  }
+}
+
+async function _requestWakeLock(){
+  if(!('wakeLock' in navigator)){_wlEnabled=false;return;}
+  try{
+    _wl=await navigator.wakeLock.request('screen');
+    _updateWlBtn(true);
+    _wl.addEventListener('release',()=>{_wl=null;});
+  }catch(e){
+    _wlEnabled=false;
+    _updateWlBtn(false);
+  }
+}
+
+function _updateWlBtn(active){
+  const btn=document.getElementById('wl-btn');
+  btn.classList.toggle('active',active);
+  btn.textContent=active?'☀ Schermo ON':'☀ Schermo ON';
+}
+
+document.addEventListener('visibilitychange',async()=>{
+  if(_wlEnabled&&document.visibilityState==='visible')await _requestWakeLock();
+});
+
+/* ── SERIES TRACKER ── */
+function parseSets(ex){
+  const b=ex.querySelector('.badge-serie');
+  if(b){
+    const ms=[...(b.textContent.matchAll(/(\d+)\s*[×x]/gi))];
+    return ms.reduce((s,m)=>s+parseInt(m[1]),0);
+  }
+  if(ex.querySelector('.badge-tabata'))return 8;
+  return 0;
+}
+function refreshDots(wrap){
+  let found=false;
+  wrap.querySelectorAll('.set-dot').forEach(d=>{
+    d.classList.remove('current');
+    if(!found&&!d.classList.contains('done')){d.classList.add('current');found=true;}
+  });
+}
+function initTrackers(){
+  document.querySelectorAll('.ex').forEach(ex=>{
+    const n=parseSets(ex);
+    if(!n)return;
+    const wrap=document.createElement('div');
+    wrap.className='set-tracker';
+    for(let i=0;i<n;i++){
+      const b=document.createElement('button');
+      b.className='set-dot';
+      b.title=`Serie ${i+1}`;
+      b.setAttribute('aria-label',`Serie ${i+1}`);
+      b.onclick=e=>{e.stopPropagation();b.classList.toggle('done');refreshDots(wrap);};
+      wrap.appendChild(b);
+    }
+    ex.querySelector('.ex-meta').appendChild(wrap);
+    refreshDots(wrap);
+  });
+}
+initTrackers();
+
+/* ── KG WEIGHTS ── */
+function initWeights(){
+  document.querySelectorAll('.ex[data-eid]').forEach(ex=>{
+    const key='kg_'+ex.dataset.eid;
+    const inp=ex.querySelector('.kg-input');
+    if(!inp)return;
+    const saved=localStorage.getItem(key);
+    if(saved)inp.value=saved;
+    inp.addEventListener('input',()=>{
+      if(inp.value.trim())localStorage.setItem(key,inp.value.trim());
+      else localStorage.removeItem(key);
+    });
+    inp.addEventListener('click',e=>e.stopPropagation());
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+  });
+}
+initWeights();
+</script>
+<script>
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>

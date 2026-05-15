@@ -1,12 +1,12 @@
 {
-  "name": "Workout — Raffaele Pannullo",
-  "short_name": "Workout RP",
-  "description": "Scheda allenamento personale — Ricomposizione Corporea",
-  "start_url": "raffaele_workout.html",
+  "name": "Workout — Giovanna Landi",
+  "short_name": "Workout GL",
+  "description": "Scheda allenamento personale — Forza e Tono",
+  "start_url": "giovanna_workout.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0c0c0c",
-  "theme_color": "#0c0c0c",
+  "theme_color": "#1a0a1e",
   "icons": [
     {
       "src": "icon.png",

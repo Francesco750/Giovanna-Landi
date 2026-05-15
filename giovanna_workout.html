@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Scheda — Giovanna Landi</title>
+<meta name="theme-color" content="#1a0a1e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Workout GL">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0c0c0c;--card:#161616;--card2:#1e1e1e;--border:#272727;
+  --accent:#d946ef;--red:#ff2d55;--text:#f2f2f2;--sub:#888;
+  --spalle:#fb7185;--dorso:#00c8ff;--gambe:#00e676;
+  --glutei:#ffd000;--bicipiti:#ff6b6b;--tricipiti:#c264ff;
+  --addominali:#ff4081;--cardio:#555;--attivazione:#888;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
+
+.hd{padding:24px 16px 16px;border-bottom:1px solid var(--border);}
+.hd-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,9vw,68px);line-height:.92;letter-spacing:1px;}
+.hd-name span{color:var(--accent);}
+.hd-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;}
+.pill{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--sub);}
+.pill.goal{background:var(--accent);color:#000;border-color:var(--accent);}
+button.pill{background:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .2s,color .2s,background .2s;}
+button.pill.active{border-color:var(--accent);color:var(--accent);background:rgba(217,70,239,.1);}
+
+.info-box{margin:14px 16px;background:var(--card);border-left:3px solid var(--accent);padding:10px 14px;}
+.info-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:6px;}
+.info-row{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#aaa;line-height:1.6;margin-bottom:3px;}
+.info-row:last-child{margin-bottom:0;}
+.info-badge{font-size:10px;font-weight:700;padding:2px 7px;border:1px solid;flex-shrink:0;margin-top:2px;letter-spacing:.5px;}
+.info-badge.isomix{border-color:#c264ff;color:#c264ff;}
+.info-badge.drop{border-color:#ff6b6b;color:#ff6b6b;}
+.info-badge.iso{border-color:#00c8ff;color:#00c8ff;}
+
+.week-bar{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;background:var(--bg);}
+.wk-btn{flex:1;padding:11px 4px;background:none;border:none;border-bottom:2px solid transparent;color:var(--sub);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s;}
+.wk-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:36px;z-index:19;}
+.tab{flex:1;padding:13px 8px;background:none;border:none;border-bottom:2px solid transparent;color:var(--sub);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+.session{display:none;padding-bottom:80px;}
+.session.active{display:block;}
+body.tmr-active .session.active{padding-bottom:124px;}
+
+.warmup{margin:14px 16px;background:var(--card);border:1px solid var(--border);padding:12px 14px;}
+.warmup-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--attivazione);margin-bottom:6px;}
+.warmup-body{font-size:12px;color:#888;line-height:1.7;}
+.warmup-activation{font-size:13px;font-weight:600;color:var(--text);margin-top:6px;}
+
+.grp{display:flex;align-items:center;gap:10px;padding:20px 16px 6px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2.5px;}
+.grp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+.ex{background:var(--card);border-bottom:1px solid var(--border);}
+.ex-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.ex-idx{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--sub);min-width:22px;padding-top:1px;}
+.ex-main{flex:1;min-width:0;}
+.ex-title{font-size:14px;font-weight:600;line-height:1.3;margin-bottom:8px;}
+.ex-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.badge-pres{font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--border);padding:5px 10px;color:var(--text);white-space:nowrap;letter-spacing:.3px;}
+.badge-pres.isomix{border-color:#c264ff;color:#c264ff;}
+.badge-pres.iso{border-color:#00c8ff;color:#00c8ff;}
+.badge-pres.drop{border-color:#ff6b6b;color:#ff6b6b;}
+.badge-pres.cardio{border-color:var(--accent);color:var(--accent);}
+.badge-pres.empty{color:var(--sub);}
+.btn-timer{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:none;border:1px solid var(--accent);color:var(--accent);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;letter-spacing:.3px;}
+.btn-timer:active,.btn-timer:hover{background:var(--accent);color:#000;}
+.btn-timer svg{width:13px;height:13px;flex-shrink:0;}
+.ex-chevron{color:var(--sub);font-size:11px;flex-shrink:0;transition:transform .2s;margin-top:2px;}
+.ex.open .ex-chevron{transform:rotate(180deg);}
+
+.ex-body{display:none;padding:4px 16px 18px 50px;animation:fd .2s ease;}
+.ex.open .ex-body{display:block;}
+@keyframes fd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.tips{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.tip{display:flex;gap:8px;font-size:12px;color:#888;line-height:1.5;}
+.tip-ic{color:var(--accent);flex-shrink:0;margin-top:2px;}
+.ex-note{font-size:11px;color:#555;margin-top:8px;font-style:italic;}
+.video-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--accent);text-decoration:none;margin-bottom:10px;}
+.video-link:hover{text-decoration:underline;}
+
+.cardio-card{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.cardio-icon{font-size:20px;flex-shrink:0;}
+.cardio-info{flex:1;}
+.cardio-name{font-size:13px;font-weight:600;margin-bottom:4px;}
+.cardio-pres{font-size:20px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--accent);}
+.cardio-note{font-size:11px;color:var(--sub);margin-top:2px;}
+
+/* TIMER BAR */
+#tmr-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(13,13,13,.97);border-top:1px solid var(--border);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:10px 16px;align-items:center;gap:14px;}
+#tmr-bar.on{display:flex;}
+.tbar-ring{position:relative;width:46px;height:46px;flex-shrink:0;}
+.tbar-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.tbar-track{fill:none;stroke:var(--border);stroke-width:4;}
+.tbar-prog{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s;}
+.tbar-prog.warn{stroke:var(--red);}
+.tbar-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent);transition:color .3s;}
+.tbar-num.warn{color:var(--red);}
+.tbar-info{flex:1;min-width:0;}
+.tbar-lbl{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.tbar-ctx{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tbar-btns{display:flex;gap:8px;flex-shrink:0;}
+.tbar-btn{width:40px;height:40px;border:1px solid var(--border);background:none;color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s;}
+.tbar-btn:hover,.tbar-btn:active{border-color:var(--accent);color:var(--accent);}
+
+/* DOTS */
+.set-tracker{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;}
+.set-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:none;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0;}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(217,70,239,.5);}60%{box-shadow:0 0 0 5px rgba(217,70,239,0);}}
+.set-dot.current{border-color:var(--accent);background:rgba(217,70,239,.12);animation:pulse-dot 1.6s ease-out infinite;}
+.set-dot.done{background:#3a3a3a;border-color:#3a3a3a;}
+.set-dot.done::after{content:'';position:absolute;inset:5px;border-radius:50%;background:#666;}
+
+/* KG */
+.kg-wrap{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--border);padding:4px 9px 4px 10px;background:var(--card2);cursor:text;}
+.kg-input{width:40px;background:none;border:none;color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;outline:none;text-align:right;-moz-appearance:textfield;}
+.kg-input::-webkit-outer-spin-button,.kg-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.kg-input::placeholder{color:#444;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;line-height:1.6;}
+.kg-lbl{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;font-weight:600;}
+
+@media(max-width:380px){.ex-body{padding-left:16px;}}
+</style>
+</head>
+<body>
+
+<!-- TIMER BAR -->
+<div id="tmr-bar">
+  <div class="tbar-ring">
+    <svg viewBox="0 0 46 46">
+      <circle class="tbar-track" cx="23" cy="23" r="19"/>
+      <circle class="tbar-prog" id="tbar-prog" cx="23" cy="23" r="19"/>
+    </svg>
+    <div class="tbar-num" id="tbar-num">60</div>
+  </div>
+  <div class="tbar-info">
+    <div class="tbar-lbl">Timer recupero</div>
+    <div class="tbar-ctx" id="tbar-ctx">—</div>
+  </div>
+  <div class="tbar-btns">
+    <button class="tbar-btn" id="tbar-pause-btn" onclick="togglePause()">⏸</button>
+    <button class="tbar-btn" onclick="closeTimer()">✕</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hd">
+  <div class="hd-name">GIOVANNA<br><span>LANDI</span></div>
+  <div class="hd-row">
+    <span class="pill goal">Forza · Tono</span>
+    <span class="pill">A · B · 4 Settimane</span>
+    <span class="pill">Mag 2026</span>
+    <button class="pill" id="wl-btn" onclick="toggleWakeLock()">☀ Schermo ON</button>
+  </div>
+</div>
+
+<!-- METODI INFO BOX -->
+<div class="info-box">
+  <div class="info-title">Metodi di Allenamento</div>
+  <div class="info-row"><span class="info-badge isomix">isomix</span><span>Ogni 5 ripetizioni, mantieni il muscolo in isometria per 5 secondi</span></div>
+  <div class="info-row"><span class="info-badge drop">8+8+8</span><span>Scala di peso ogni 8 ripetizioni e continua senza fermarti</span></div>
+  <div class="info-row"><span class="info-badge iso">+ 10″ iso</span><span>Alla fine delle 12 ripetizioni, mantieni in isometria per 10 secondi</span></div>
+</div>
+
+<!-- WEEK BAR -->
+<div class="week-bar">
+  <button class="wk-btn active" onclick="switchWeek(0)">Sett. 1</button>
+  <button class="wk-btn" onclick="switchWeek(1)">Sett. 2</button>
+  <button class="wk-btn" onclick="switchWeek(2)">Sett. 3</button>
+  <button class="wk-btn" onclick="switchWeek(3)">Sett. 4</button>
+</div>
+
+<!-- SESSION TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0)">Scheda A</button>
+  <button class="tab" onclick="switchTab(1)">Scheda B</button>
+</div>
+
+<div class="session active" id="s0"></div>
+<div class="session" id="s1"></div>
+
+<script>
+/* ── DATA ── */
+const SESSIONS = [
+  {
+    id:'A', label:'Scheda A',
+    activation:'Adduttori (interno) — 1×1 min',
+    groups:[
+      {label:'SPALLE', colorVar:'--spalle', exercises:[
+        {id:'a01', name:'Shoulder Press',
+         tips:['Parti con i manubri all\'altezza delle orecchie, spingi verso l\'alto senza estendere completamente i gomiti','Mantieni il core attivato, non inarcare la zona lombare','Il percorso è leggermente diagonale, non dritto su'],
+         note:'Controllo in discesa · non sbloccare i gomiti in cima',
+         weeks:[
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+         ]},
+        {id:'a02', name:'Alzate Laterali a Martello',
+         tips:['Impugnatura a martello (pollice verso l\'alto) — isola la porzione laterale del deltoide','Arriva all\'altezza delle spalle, non oltre','Controllata in discesa per mantenere la tensione'],
+         note:'Tensione continua · fase eccentrica lenta',
+         weeks:[
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+         ]},
+        {id:'a03', name:'Alzate Laterali Y Raise',
+         tips:['Porta le braccia in diagonale verso l\'alto formando una Y — attiva il trapezio inferiore e il deltoide','Scapole abbassate e retratte durante il movimento','ROM ampio ma controllato — scendi fino ai fianchi'],
+         note:'Movimento lento · focus su trapezio inferiore',
+         weeks:[
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+         ]},
+      ]},
+      {label:'ADDOMINALI', colorVar:'--addominali', exercises:[
+        {id:'a04', name:'Sit Up',
+         tips:['Lombare che si solleva progressivamente dal suolo — non strappi con il collo','Risali con controllo, esala durante la salita','Scendi lentamente senza appoggiarti completamente al suolo tra le rep'],
+         note:'Controllo in ogni fase · senza strappi',
+         weeks:[
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+         ]},
+        {id:'a05', name:'Addome Inverso',
+         tips:['Porta le ginocchia verso il petto sollevando il bacino dal suolo — non oscillare','Scendi lentamente senza appoggiare i talloni tra le ripetizioni','Mantieni la lombare incollata al suolo per tutto il movimento'],
+         note:'Lombare al suolo · fase eccentrica lenta',
+         weeks:[
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+         ]},
+      ]},
+      {label:'GAMBE', colorVar:'--gambe', exercises:[
+        {id:'a06', name:'Passetti Laterali',
+         tips:['Fascetta elastica sopra le ginocchia — mantieni tensione costante sulla fascia','Piega leggermente le ginocchia, schiena dritta e core attivo','Passi ampi a lato, poi riporta il piede — non incrociare mai le gambe'],
+         note:'Tensione costante sulla fascia · niente incroci',
+         weeks:[
+           {sets:3, reps:'10', rec:0},
+           {sets:3, reps:'10', rec:0},
+           {sets:3, reps:'10', rec:0},
+           {sets:3, reps:'10', rec:0},
+         ]},
+        {id:'a07', name:'Step Up su Cubo al Cavo Basso con Maniglia',
+         tips:['Spingi con il tallone del piede sul cubo per attivare il gluteo, non il quadricipite','Non dare spinta con la gamba a terra — l\'anca si apre naturalmente','Scendi in modo controllato — non cadere giù'],
+         note:'Spingi col tallone · niente spinta dalla gamba a terra',
+         weeks:[
+           {sets:3, reps:'8', rec:0},
+           {sets:3, reps:'8', rec:0},
+           {sets:3, reps:'8', rec:0},
+           {sets:3, reps:'8', rec:0},
+         ]},
+        {id:'a08', name:'Leg Extension Singola',
+         tips:['Una gamba per volta — corregge le asimmetrie tra destra e sinistra','Spremi il quadricipite in cima 1 secondo prima di scendere','Scendi lentamente per mantenere la tensione sul muscolo'],
+         note:'Tensione continua · spremi in cima 1″',
+         weeks:[
+           {sets:3, reps:'6', rec:100},
+           {sets:3, reps:'6', rec:100},
+           {sets:3, reps:'6', rec:100},
+           {sets:3, reps:'6', rec:100},
+         ]},
+      ]},
+      {label:'TRICIPITI', colorVar:'--tricipiti', exercises:[
+        {id:'a09', name:'Push Down Fune',
+         tips:['Gomiti fissi ai fianchi — non aprirli durante l\'estensione','Separa le mani verso i fianchi in fondo per massima contrazione del tricipite','Movimento lento e fluido — niente strappi'],
+         note:'Gomiti fissi · separa la fune in fondo',
+         weeks:[
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+         ]},
+        {id:'a10', name:'Fune da Dietro Cavi Alti',
+         tips:['Cavo alto dietro la testa — tricipite in massimo stiramento in partenza','Distendi i gomiti completamente portando le mani davanti alla fronte','Gomiti alti e fermi durante tutto il movimento'],
+         note:'Tricipite in stiramento · distendi completamente',
+         weeks:[
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+         ]},
+      ]},
+      {label:'BICIPITI', colorVar:'--bicipiti', exercises:[
+        {id:'a11', name:'Bicipiti Astino Cavo Basso',
+         tips:['Presa con bilancino al cavo basso — tensione continua lungo tutto il ROM','Gomiti fissi ai fianchi — non avanzare durante il curl','Contrai il bicipite in cima 1 secondo, poi scendi controllato'],
+         note:'Gomiti fissi · tensione continua',
+         weeks:[
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+         ]},
+      ]},
+      {label:'CARDIO', colorVar:'--cardio', exercises:[
+        {id:'a-c', name:'Cardio', isCardio:true, note:'1 min veloce + 1 min normale',
+         tips:['Alterna 1 minuto ad alta intensità e 1 minuto a ritmo normale','Mantieni il ritmo alternato per tutti i 10 minuti senza fermarti'],
+         weeks:[
+           {type:'cardio', dur:'10 min'},
+           {type:'cardio', dur:'10 min'},
+           {type:'cardio', dur:'10 min'},
+           {type:'cardio', dur:'10 min'},
+         ]},
+      ]},
+    ]
+  },
+  {
+    id:'B', label:'Scheda B',
+    activation:'Abduttori (esterno) — 1×1 min',
+    groups:[
+      {label:'DORSO', colorVar:'--dorso', exercises:[
+        {id:'b01', name:'Lat Machine',
+         tips:['Presa larga — circa 1.5× larghezza spalle','Tira la sbarra verso il petto, non il mento verso la sbarra','Scapole retratte e abbassate durante il pull — spalle mai su'],
+         note:'Scapole abbassate · tira verso il petto',
+         weeks:[
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+         ]},
+        {id:'b02', name:'Pulley',
+         tips:['Presa stretta o neutra — attiva romboidi e dorsali bassi','Porta le mani verso l\'ombelico con gomiti aderenti al corpo','Estendi completamente le braccia in avanti per il ROM completo'],
+         note:'Gomiti aderenti · estendi completamente in avanti',
+         weeks:[
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+         ]},
+        {id:'b03', name:'Rematore Machine',
+         tips:['Petto appoggiato al pad — torace fermo, niente oscillazioni del busto','Porta i gomiti verso il soffitto, non verso i lati','Stendi completamente le braccia in avanti — ROM completo'],
+         note:'Busto fermo · stendi completamente in avanti',
+         weeks:[
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+         ]},
+      ]},
+      {label:'ADDOMINALI', colorVar:'--addominali', exercises:[
+        {id:'b04', name:'Sit Up',
+         tips:['Lombare che si solleva progressivamente dal suolo — non strappi con il collo','Risali con controllo, esala durante la salita','Scendi lentamente senza appoggiarti completamente al suolo tra le rep'],
+         note:'Controllo in ogni fase · senza strappi',
+         weeks:[
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+         ]},
+        {id:'b05', name:'Addome Inverso',
+         tips:['Porta le ginocchia verso il petto sollevando il bacino dal suolo — non oscillare','Scendi lentamente senza appoggiare i talloni tra le ripetizioni','Mantieni la lombare incollata al suolo per tutto il movimento'],
+         note:'Lombare al suolo · fase eccentrica lenta',
+         weeks:[
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+           {sets:3, reps:'max', rec:30},
+         ]},
+      ]},
+      {label:'GAMBE / GLUTEI', colorVar:'--glutei', exercises:[
+        {id:'b06', name:'Affondi Bulgari',
+         tips:['Piede posteriore su panca — il peso è sulla gamba anteriore','Ginocchio anteriore non supera la punta del piede — busto leggermente inclinato in avanti','Scendi controllato, sali spingendo con il tallone del piede anteriore'],
+         note:'Peso sulla gamba anteriore · spingi col tallone',
+         weeks:[
+           {sets:3, reps:'8', rec:0},
+           {sets:3, reps:'8', rec:0},
+           {sets:3, reps:'8', rec:0},
+           {sets:3, reps:'8', rec:0},
+         ]},
+        {id:'b07', name:'Squat Sumo al Multipower',
+         tips:['Piedi larghi con punte fuori a 45° — attiva adduttori e glutei oltre ai quadricipiti','Scendi fino a coscia parallela al suolo o oltre','Spingi le ginocchia verso l\'esterno in risalita — segui la direzione delle punte'],
+         note:'Ginocchia verso l\'esterno in salita',
+         weeks:[
+           {sets:3, reps:'6', rec:0},
+           {sets:3, reps:'6', rec:0},
+           {sets:3, reps:'6', rec:0},
+           {sets:3, reps:'6', rec:0},
+         ]},
+        {id:'b08', name:'Hip Thrust',
+         tips:['Spalle appoggiate alla panca, piedi a larghezza fianchi e piegati a 90°','Spingi il bacino verso l\'alto contraendo il gluteo in cima — tieni 1 secondo','Non inarcare eccessivamente la zona lombare in cima — l\'estensione parte dal gluteo'],
+         note:'Contrai il gluteo in cima · 1″ di tenuta',
+         weeks:[
+           {sets:3, reps:'12', rec:100},
+           {sets:3, reps:'12', rec:100},
+           {sets:3, reps:'12', rec:100},
+           {sets:3, reps:'12', rec:100},
+         ]},
+      ]},
+      {label:'SPALLE', colorVar:'--spalle', exercises:[
+        {id:'b09', name:'Alzate Laterali in Piedi',
+         tips:['Braccio leggermente flesso al gomito — polso neutro','Il gomito guida il movimento verso l\'alto — non il polso','Arriva all\'altezza della spalla, non oltre'],
+         note:'Gomito guida il movimento · arriva alla spalla',
+         weeks:[
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+           {sets:4, reps:'15', mod:'isomix', rec:40},
+           {sets:3, reps:'8+8+8', mod:'drop', rec:60},
+         ]},
+        {id:'b10', name:'Alzate Laterali da Seduta p. 60°',
+         tips:['Panca inclinata a 60° — elimina lo slancio e isola il deltoide laterale','Il gomito guida il movimento — polso neutro per tutto il ROM','Scendi lentamente e con controllo — mantieni la tensione'],
+         note:'Deltoide puro · niente slancio',
+         weeks:[
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', rec:60},
+           {sets:3, reps:'8', rec:100},
+         ]},
+      ]},
+      {label:'BICIPITI', colorVar:'--bicipiti', exercises:[
+        {id:'b11', name:'Bicipiti Insieme da Seduto',
+         tips:['Da seduto si elimina lo slancio — il lavoro è puramente del bicipite','Supina il polso mentre sali per massimizzare il picco del bicipite','Scendi controllato — non sbattere i manubri a fine eccentrica'],
+         note:'Niente slancio · supina il polso in salita',
+         weeks:[
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+           {sets:3, reps:'8', rec:100},
+           {sets:3, reps:'12', mod:'iso', rec:60},
+         ]},
+      ]},
+      {label:'CARDIO', colorVar:'--cardio', exercises:[
+        {id:'b-c', name:'Cardio', isCardio:true, note:'1 min veloce + 1 min normale',
+         tips:['Alterna 1 minuto ad alta intensità e 1 minuto a ritmo normale','Mantieni il ritmo alternato per tutti i 10 minuti senza fermarti'],
+         weeks:[
+           {type:'cardio', dur:'10 min'},
+           {type:'cardio', dur:'10 min'},
+           {type:'cardio', dur:'10 min'},
+           {type:'cardio', dur:'10 min'},
+         ]},
+      ]},
+    ]
+  }
+];
+
+/* ── STATE ── */
+let currentWeek = parseInt(localStorage.getItem('gl_week')||'0');
+let currentTab  = 0;
+
+/* ── RENDER ── */
+const TIMER_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>`;
+
+function fmtSec(s){return s>=60?`${Math.floor(s/60)}'${s%60?String(s%60).padStart(2,'0')+'″':''}`:s+'″';}
+
+function presText(w){
+  if(!w) return '—';
+  if(w.type==='cardio') return w.dur;
+  let s = `${w.sets} × ${w.reps}`;
+  if(w.mod==='isomix') s += ' isomix';
+  if(w.mod==='iso') s += ' + 10″ iso';
+  return s;
+}
+function presClass(w){
+  if(!w) return 'badge-pres empty';
+  if(w.type==='cardio') return 'badge-pres cardio';
+  if(w.mod==='isomix') return 'badge-pres isomix';
+  if(w.mod==='iso') return 'badge-pres iso';
+  if(w.mod==='drop') return 'badge-pres drop';
+  return 'badge-pres';
+}
+function getSets(w){
+  if(!w||w.type==='cardio') return 0;
+  return w.sets;
+}
+
+function timerHtml(w, exName, exId){
+  const rec = w?.rec || 0;
+  if(!rec) return '';
+  return `<button class="btn-timer" onclick="ev(event);startTimer(${rec},'${exName}')">${TIMER_SVG} ${fmtSec(rec)}</button>`;
+}
+
+function buildSession(si){
+  const sess = SESSIONS[si];
+  const container = document.getElementById('s'+si);
+  let exIdx = 1;
+  let html = `<div class="warmup">
+    <div class="warmup-title">Attivazione (inizio seduta)</div>
+    <div class="warmup-body">Riscaldamento generale: 5 min camminata o cyclette leggera</div>
+    <div class="warmup-activation">▸ ${sess.activation}</div>
+  </div>`;
+
+  sess.groups.forEach(grp=>{
+    const color = `var(${grp.colorVar})`;
+    html += `<div class="grp" style="color:${color}"><div class="grp-dot" style="background:${color}"></div>${grp.label}</div>`;
+
+    grp.exercises.forEach(ex=>{
+      const w = ex.weeks[currentWeek];
+
+      if(ex.isCardio){
+        const pres = w ? w.dur : '—';
+        html += `<div class="cardio-card">
+          <div class="cardio-icon">🏃</div>
+          <div class="cardio-info">
+            <div class="cardio-name">${ex.name}</div>
+            <div class="cardio-pres" id="cpres-${ex.id}">${pres}</div>
+            <div class="cardio-note">${ex.note}</div>
+          </div>
+        </div>`;
+        return;
+      }
+
+      const tipsHtml = ex.tips.map(t=>`<div class="tip"><span class="tip-ic">▸</span><span>${t}</span></div>`).join('');
+
+      html += `<div class="ex" data-eid="${ex.id}" onclick="toggle(this)">
+        <div class="ex-head">
+          <span class="ex-idx">${String(exIdx).padStart(2,'0')}</span>
+          <div class="ex-main">
+            <div class="ex-title">${ex.name}</div>
+            <div class="ex-meta">
+              <span class="${presClass(w)}" id="pres-${ex.id}">${presText(w)}</span>
+              <span id="twrap-${ex.id}">${timerHtml(w, ex.name, ex.id)}</span>
+              <div class="kg-wrap"><input class="kg-input" type="number" min="0" step="0.5" placeholder="— kg"><span class="kg-lbl">kg</span></div>
+            </div>
+          </div>
+          <span class="ex-chevron">▼</span>
+        </div>
+        <div class="ex-body">
+          <div class="tips">${tipsHtml}</div>
+          ${ex.note?`<div class="ex-note">${ex.note}</div>`:''}
+        </div>
+      </div>`;
+      exIdx++;
+    });
+  });
+
+  container.innerHTML = html;
+  initTrackers(si);
+  initWeights(si);
+}
+
+function buildAll(){
+  SESSIONS.forEach((_,i)=>buildSession(i));
+  document.querySelectorAll('.wk-btn').forEach((b,i)=>b.classList.toggle('active',i===currentWeek));
+}
+
+/* ── WEEK SWITCH ── */
+function switchWeek(idx){
+  currentWeek = idx;
+  localStorage.setItem('gl_week', idx);
+  document.querySelectorAll('.wk-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+
+  SESSIONS.forEach(sess=>{
+    sess.groups.forEach(grp=>{
+      grp.exercises.forEach(ex=>{
+        const w = ex.weeks[idx];
+        if(ex.isCardio){
+          const el = document.getElementById('cpres-'+ex.id);
+          if(el) el.textContent = w ? w.dur : '—';
+          return;
+        }
+        const presEl = document.getElementById('pres-'+ex.id);
+        if(presEl){presEl.textContent=presText(w);presEl.className=presClass(w);}
+
+        const twrap = document.getElementById('twrap-'+ex.id);
+        if(twrap) twrap.innerHTML = timerHtml(w, ex.name, ex.id);
+
+        const card = document.querySelector(`.ex[data-eid="${ex.id}"]`);
+        if(card){
+          const old=card.querySelector('.set-tracker');
+          if(old) old.remove();
+          buildDots(card, ex, w);
+        }
+      });
+    });
+  });
+}
+
+/* ── TAB SWITCH ── */
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.session').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  document.querySelectorAll('.ex').forEach(e=>e.classList.remove('open'));
+  currentTab=i;
+}
+
+/* ── TOGGLE CARD ── */
+function toggle(card){
+  const isOpen=card.classList.contains('open');
+  document.querySelectorAll('.ex').forEach(e=>e.classList.remove('open'));
+  if(!isOpen){card.classList.add('open');setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}
+}
+function ev(e){e.stopPropagation();}
+
+/* ── DOTS ── */
+function buildDots(card, ex, w){
+  const n = getSets(w);
+  if(!n) return;
+  const meta = card.querySelector('.ex-meta');
+  const wrap = document.createElement('div');
+  wrap.className='set-tracker';
+  for(let i=0;i<n;i++){
+    const b=document.createElement('button');
+    b.className='set-dot';
+    b.title=`Serie ${i+1}`;
+    b.setAttribute('aria-label',`Serie ${i+1}`);
+    b.onclick=e=>{e.stopPropagation();b.classList.toggle('done');refreshDots(wrap);};
+    wrap.appendChild(b);
+  }
+  meta.appendChild(wrap);
+  refreshDots(wrap);
+}
+function refreshDots(wrap){
+  let found=false;
+  wrap.querySelectorAll('.set-dot').forEach(d=>{
+    d.classList.remove('current');
+    if(!found&&!d.classList.contains('done')){d.classList.add('current');found=true;}
+  });
+}
+function initTrackers(si){
+  const sess = SESSIONS[si];
+  sess.groups.forEach(grp=>{
+    grp.exercises.forEach(ex=>{
+      if(ex.isCardio) return;
+      const card = document.querySelector(`.ex[data-eid="${ex.id}"]`);
+      if(!card) return;
+      buildDots(card, ex, ex.weeks[currentWeek]);
+    });
+  });
+}
+
+/* ── KG WEIGHTS ── */
+function initWeights(si){
+  document.querySelectorAll(`#s${si} .ex[data-eid]`).forEach(ex=>{
+    const key='gl_kg_'+ex.dataset.eid;
+    const inp=ex.querySelector('.kg-input');
+    if(!inp) return;
+    const saved=localStorage.getItem(key);
+    if(saved) inp.value=saved;
+    inp.addEventListener('input',()=>{
+      if(inp.value.trim()) localStorage.setItem(key,inp.value.trim());
+      else localStorage.removeItem(key);
+    });
+    inp.addEventListener('click',e=>e.stopPropagation());
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+  });
+}
+
+/* ── TIMER ── */
+let interval=null,total=0,remaining=0,paused=false;
+const CIRC=2*Math.PI*19;
+
+function startTimer(sec,ctx){
+  clearInterval(interval);
+  total=sec;remaining=sec;paused=false;
+  document.getElementById('tbar-pause-btn').textContent='⏸';
+  document.getElementById('tbar-ctx').textContent=ctx;
+  const prog=document.getElementById('tbar-prog');
+  prog.style.strokeDasharray=CIRC;
+  prog.style.strokeDashoffset=0;
+  document.getElementById('tmr-bar').classList.add('on');
+  document.body.classList.add('tmr-active');
+  render();
+  interval=setInterval(()=>{
+    if(!paused&&remaining>0){remaining--;render();}
+    else if(remaining<=0){clearInterval(interval);flashDone();}
+  },1000);
+}
+function render(){
+  const n=document.getElementById('tbar-num');
+  const p=document.getElementById('tbar-prog');
+  n.textContent=remaining;
+  p.style.strokeDashoffset=CIRC*(1-remaining/total);
+  const w=remaining<=10;
+  n.classList.toggle('warn',w);
+  p.classList.toggle('warn',w);
+  if(remaining===3||remaining===2||remaining===1) playBeep(880,.15,.9);
+}
+function flashDone(){
+  const bar=document.getElementById('tmr-bar');
+  let c=0;
+  const f=setInterval(()=>{
+    bar.style.background=c%2===0?'rgba(217,70,239,.25)':'rgba(13,13,13,.97)';
+    if(++c>5){clearInterval(f);bar.style.background='';}
+  },220);
+  playBeep(1100,.2,1.0);
+  setTimeout(()=>playBeep(1100,.2,1.0),280);
+  setTimeout(()=>playBeep(1100,.3,1.0),560);
+  if(navigator.vibrate) navigator.vibrate([200,100,200]);
+}
+function togglePause(){paused=!paused;document.getElementById('tbar-pause-btn').textContent=paused?'▶':'⏸';}
+function closeTimer(){clearInterval(interval);document.getElementById('tmr-bar').classList.remove('on');document.body.classList.remove('tmr-active');}
+
+/* ── AUDIO ── */
+let _actx=null;
+function _getCtx(){
+  if(!_actx)_actx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_actx.state==='suspended')_actx.resume();
+  return _actx;
+}
+function playBeep(freq,dur,vol){
+  try{
+    const ctx=_getCtx();
+    const o=ctx.createOscillator(),g=ctx.createGain(),c=ctx.createDynamicsCompressor();
+    o.connect(g);g.connect(c);c.connect(ctx.destination);
+    o.type='square';o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+
+/* ── WAKE LOCK ── */
+let _wl=null,_wlEnabled=false;
+async function toggleWakeLock(){
+  _wlEnabled=!_wlEnabled;
+  if(_wlEnabled){await _requestWakeLock();}
+  else{if(_wl){await _wl.release();_wl=null;}_updateWlBtn(false);}
+}
+async function _requestWakeLock(){
+  if(!('wakeLock' in navigator)){_wlEnabled=false;return;}
+  try{_wl=await navigator.wakeLock.request('screen');_updateWlBtn(true);_wl.addEventListener('release',()=>{_wl=null;});}
+  catch(e){_wlEnabled=false;_updateWlBtn(false);}
+}
+function _updateWlBtn(active){document.getElementById('wl-btn').classList.toggle('active',active);}
+document.addEventListener('visibilitychange',async()=>{if(_wlEnabled&&document.visibilityState==='visible')await _requestWakeLock();});
+
+/* ── INIT ── */
+buildAll();
+document.querySelectorAll('.wk-btn').forEach((b,i)=>b.classList.toggle('active',i===currentWeek));
+</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>

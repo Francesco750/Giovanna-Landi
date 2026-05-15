@@ -1,6 +1,6 @@
-const CACHE = 'rp-workout-v1';
+const CACHE = 'gl-workout-v1';
 const ASSETS = [
-  'raffaele_workout.html',
+  'giovanna_workout.html',
   'manifest.json',
   'icon.svg',
   'icon.png'
